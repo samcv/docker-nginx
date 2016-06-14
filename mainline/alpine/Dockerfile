@@ -1,8 +1,10 @@
 FROM alpine:3.4
 
-MAINTAINER NGINX Docker Maintainers "docker-maint@nginx.com"
 
 ENV NGINX_VERSION 1.11.1
+
+ENV HEADERS_MORE=0.30
+ENV SOURCE_DIR=/tmp/src
 
 ENV GPG_KEYS B0F4253373F8F6F510D42178520A9993A1C052F8
 ENV CONFIG "\
@@ -47,10 +49,11 @@ ENV CONFIG "\
 	--with-file-aio \
 	--with-http_v2_module \
 	--with-ipv6 \
+	--add-module=${SOURCE_DIR}/headers-more-nginx-module-"$HEADERS_MORE" \
 	"
 
 RUN \
-	addgroup -S nginx \
+	  addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
 	&& apk add --no-cache --virtual .build-deps \
 		gcc \
@@ -66,6 +69,9 @@ RUN \
 		gd-dev \
 		geoip-dev \
 		perl-dev \
+  && mkdir -p "$SOURCE_DIR" \
+  && cd "$SOURCE_DIR" \
+  && curl -L https://github.com/openresty/headers-more-nginx-module/archive/v"$HEADERS_MORE".tar.gz | tar -xz \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -113,7 +119,8 @@ RUN \
 	\
 	# forward request and error logs to docker log collector
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
-	&& ln -sf /dev/stderr /var/log/nginx/error.log
+	&& ln -sf /dev/stderr /var/log/nginx/error.log \
+	&& rm -rf "$SOURCE_DIR"
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
