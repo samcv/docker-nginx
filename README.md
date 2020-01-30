@@ -1,3 +1,10 @@
+# Purpose
+
+A build of nginx on alpine which has the http-headers-more module included. In addition the user id and the group id of the www-data user/group are the same as on debian
+
+The only image is at mainline/alpine/Docker
+
+
 # About this Repo
 
 This is the Git repo of the official Docker image for [nginx](https://registry.hub.docker.com/_/nginx/). See the
