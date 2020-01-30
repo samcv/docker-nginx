@@ -6,11 +6,12 @@ ENV NGINX_VERSION 1.17.8
 
 ENV HEADERS_MORE=0.33
 ENV SOURCE_DIR=/tmp/src
-
+ENV USER_NAME www-data
+ENV USER_ID 101
 RUN set -x \
 # create nginx user/group first, to be consistent throughout docker variants
-&& addgroup -g 101 -S nginx \
-&& adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
+&& addgroup -g $USER_ID -S $USER_NAME \
+&& adduser -S -D -H -u $USER_ID -h /var/cache/nginx -s /sbin/nologin -G $USER_NAME -g $USER_NAME $USER_NAME \
 && apkArch="$(cat /etc/apk/arch)"
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
