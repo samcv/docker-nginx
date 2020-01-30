@@ -1,11 +1,11 @@
 FROM nextcloud:fpm-alpine
-ENV USER_ID_AFTER=788 GROUP_ID_AFTER=788 WWW_DATA_UID=33 WWW_DATA_GID=33
+ENV USER_ID_AFTER=788 GROUP_ID_AFTER=788 WWW_DATA_UID=33 WWW_DATA_GID=33 WWW_DATA_USER=www-data
 RUN set -x \
 && apk add --no-cache shadow \
-&& USER_NAME_BEFORE=$(grep "^[^:]*:[^:]*:${WWW_DATA_UID}:" /etc/passwd | cut -d : -f 1) \
-&& GROUP_NAME_BEFORE=$(grep "^[^:]*:[^:]*:${WWW_DATA_GID}:" /etc/group | cut -d : -f 1) \
-&& WWW_DATA_UID_BEFORE=$(grep '^www-data:' /etc/passwd | cut -d : -f 3) \
-&& WWW_DATA_GID_BEFORE=$(grep '^www-data:' /etc/group | cut -d : -f 3) \
+&& USER_NAME_BEFORE=$(   awk -F: "\$3 == $WWW_DATA_UID  { print \$1 }" /etc/passwd ) \
+&& GROUP_NAME_BEFORE=$(  awk -F: "\$3 == $WWW_DATA_GID  { print \$1 }" /etc/group ) \
+&& WWW_DATA_UID_BEFORE=$(awk -F: "\$1 == \"$WWW_DATA_USER\" { print \$3 }" /etc/passwd ) \
+&& WWW_DATA_GID_BEFORE=$(awk -F: "\$1 == \"$WWW_DATA_USER\" { print \$3 }" /etc/group ) \
 && usermod  -u $USER_ID_AFTER $USER_NAME_BEFORE \
 && groupmod -g $GROUP_ID_AFTER $GROUP_NAME_BEFORE \
 && find / -group $WWW_DATA_GID -exec chgrp -h $GROUP_ID_AFTER {} \; \
