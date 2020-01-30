@@ -11,7 +11,7 @@ ENV USER_ID 101
 RUN set -x \
 # create nginx user/group first, to be consistent throughout docker variants
 && addgroup -g $USER_ID -S $USER_NAME \
-&& adduser -S -D -H -u $USER_ID -h /var/cache/nginx -s /sbin/nologin -G $USER_NAME -g $USER_NAME $USER_NAME \
+&& adduser -S -D -u $USER_ID -h /var/cache/nginx -s /sbin/nologin -G $USER_NAME -g $USER_NAME $USER_NAME \
 && apkArch="$(cat /etc/apk/arch)"
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
