@@ -7,6 +7,12 @@ ENV NGINX_VERSION 1.17.8
 ENV HEADERS_MORE=0.33
 ENV SOURCE_DIR=/tmp/src
 
+RUN set -x \
+# create nginx user/group first, to be consistent throughout docker variants
+&& addgroup -g 101 -S nginx \
+&& adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
+&& apkArch="$(cat /etc/apk/arch)"
+
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 && CONFIG="\
 --prefix=/etc/nginx \
@@ -54,8 +60,6 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 --with-http_v2_module \
 --add-module=${SOURCE_DIR}/headers-more-nginx-module-"$HEADERS_MORE" \
 " \
-&& addgroup -S nginx \
-&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
 && apk add --no-cache --virtual .build-deps \
 gcc \
 libc-dev \
@@ -70,7 +74,6 @@ libxslt-dev \
 gd-dev \
 geoip-dev \
 perl-dev \
-
 && mkdir -p "$SOURCE_DIR" \
 && cd "$SOURCE_DIR" \
 && curl -L https://github.com/openresty/headers-more-nginx-module/archive/v"$HEADERS_MORE".tar.gz | tar -xz \
