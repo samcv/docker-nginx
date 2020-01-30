@@ -28,8 +28,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
 --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
 --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
---user=nginx \
---group=nginx \
+--user=www-data \
+--group=www-data \
 --with-http_ssl_module \
 --with-http_realip_module \
 --with-http_addition_module \
@@ -143,6 +143,7 @@ scanelf --needed --nobanner --format '%n#p' /usr/sbin/nginx /usr/lib/nginx/modul
 # Bring in tzdata so users could set the timezones through the environment
 # variables
 && apk add --no-cache tzdata \
+&& apk add --no-cache curl \
 \
 # forward request and error logs to docker log collector
 && ln -sf /dev/stdout /var/log/nginx/access.log \
